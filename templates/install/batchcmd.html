@@ -1,0 +1,121 @@
+{% extends 'base/_layout.html' %}
+{% load mytag %}
+{% block content %}
+    <div id="content">
+        <div id="content-header">
+            <div id="breadcrumb">
+                <a href="{% url 'group' %}" title="Go to Home" class="tip-bottom">
+                    <i class="icon-home"></i> salt认证
+                </a>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="widget-box span9">
+                      <div class="widget-content nopadding">
+                             <form class="form-horizontal form-border" method="post" enctype="multipart/form-data" action="">
+                                    {% csrf_token %}
+                                    <div class="control-group" >
+                                        <label class="col-sm-3 control-label">目标主机</label>
+                                        <div class="controls">
+                                            <input type="text" class="form-control" placeholder="支持正则匹配,多个主机,支持分组" name="tgt" value={{ tgt }}>
+                                        </div>
+                                    </div>
+                                    <div class="control-group" >
+                                        <label class="col-sm-3 control-label">远程命令</label>
+                                        <div class="controls">
+                                            <input type="text" class="form-control" name="arg" value={{ arg }}>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                         <div class="controls">
+                                              <button type="submit" class="btn btn-primary">执行</button>
+                                         </div>
+                                    </div>
+                             </form>
+                      </div>
+            </div>
+            <div class="widget-box span10">
+                <div class="widget-content nopadding">
+                    {% for key,value in ret.items %}
+                    <div class="alert alert-success alert-block"> <a class="close" data-dismiss="alert" href="#">×</a>
+                        <h4 class="alert-heading">主机名: {{ key }}</h4>
+                            <pre >
+                                {{ value }}
+                            </pre>
+                    </div>
+{#                    <p class="alert alert-success">  </p>#}
+{#                    <pre style="font-weight: 600;"  class="alert alert-block">#}
+{#                    {{ value }}#}
+{#                  </pre>#}
+                {% endfor %}
+                </div>
+            </div>
+
+
+            </div>
+    </div>
+
+{% endblock %}
+
+{% block JS %}
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/sweetalert/sweetalert.min.js"></script>
+    <script>
+                            /*全选功能*/
+                    $(document).ready(function() {
+                        $("input[id=checkall]").click(
+                                function () {
+                                    if (this.checked) {
+                                        $("input[type=checkbox]").prop('checked', true)
+                                    } else {
+                                        $("input[type=checkbox]").prop('checked', false)
+                                    }
+                                }
+                        );
+                        $('a[name="deletegroup"]').click(
+                                function () {
+{#                                    console.log('123')#}
+                                    var delgroup = $(this).parent().parent().children("td[name='id']").attr("value");
+                                    swal({
+                                          title: "你确定要删除吗?",
+                                          text: "部门删除后就不能恢复了",
+                                          type: "warning",
+                                          showCancelButton: true,
+                                          confirmButtonColor: "#DD6B55",
+                                          confirmButtonText: "Yes, delete it!",
+                                          closeOnConfirm: false
+                                        },
+                                        function(){
+                                            alert(delgroup);
+                                            $.post("{% url 'deletes' %}", {DeleteId:JSON.stringify(delgroup),DeleteName:JSON.stringify('group')},
+                                                    function(callback){
+                                                    });
+                                            swal("删除!", "部门删除成功", "success");
+
+                                        });
+                                    $(this).parent().parent().remove();
+                                }
+                        );
+                        $('button[name="export"]').click(
+                                function(){
+                                     $('#assetform').table2excel({ // 选择器选择要到处的表格，也就是根据原表格构建的表格
+                                        exclude: ".btn-xs",
+                                        name: "Excel Document Name",
+                                        filename: "部门列表", // 导出的文件名
+                                        fileext: ".xls" // 导出的文件扩展名
+                                        });
+                                }
+                        );
+                            $('a[id="batchdel"]').click(
+                                    function () {
+                                        alert('删除你脑袋删除');
+                                    }
+                            )
+
+                        $('a[name="batchdel"]').click(function () {
+                                swal("谁给你的勇气删除的")
+                        });
+                   });
+{#http://t4t5.github.io/sweetalert/#}
+                            </script>
+{% endblock %}

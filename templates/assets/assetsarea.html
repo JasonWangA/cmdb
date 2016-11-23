@@ -1,0 +1,110 @@
+{% extends 'base/_layout.html' %}
+{% block content %}
+     <div id="content">
+        <div id="content-header">
+            <div id="breadcrumb">
+                <a href="index.html" title="Go to Home" class="tip-bottom">
+                    <i class="icon-home"></i> 资产管理
+                </a>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="">
+               <!-导航栏>
+
+              <div class="nav" style="width: 50%;margin-left: 5px;">
+                  <button class="btn btn-info pos" onclick="">资产信息</button>
+                  <div class="btn-group pos" >
+                      <button data-toggle="dropdown" class="btn btn-success dropdown-toggle">机房 <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                      </ul>
+                  </div>
+                  <div class="btn-group pos">
+                    <button class="btn btn-primary">资产类型</button>
+                    <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">Action</a></li>
+                      <li><a href="#">Another action</a></li>
+                      <li><a href="#">Something else here</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">Separated link</a></li>
+                    </ul>
+                  </div>
+                  <div class="btn-group pos">
+                    <button class="btn btn-primary">资产状态</button>
+                    <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">Action</a></li>
+                      <li><a href="#">Another action</a></li>
+                      <li><a href="#">Something else here</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">Separated link</a></li>
+                    </ul>
+                  </div>
+              </div>
+            </div>
+
+
+            <div class="span10">
+                <div class="widget-box">
+                <div class="widget-title"> <span class="icon">
+            <div class="checker" id="uniform-title-checkbox"><span><input type="checkbox" id="title-checkbox" name="title-checkbox" ></span></div>
+            </span>
+                    <h5>网络设备详细列表</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered table-striped with-check">
+                        <thead>
+                            <tr>
+                                 <th class="text-center">
+                                        <input id="checkall" type="checkbox" class="i-checks" name="checkall">
+                                    </th>
+                                    <th class="text-center"> 主机名 </th>
+                                    <th class="text-center" name="ip">IP地址</th>
+                                    <th class="text-center">机房</th>
+                                    <th class="text-center">用途</th>
+                                    <th class="text-center"> 操作系统 </th>
+                                    <th class="text-center"> cpu核数 </th>
+                                    <th class="text-center"> 内存 </th>
+                                    <th class="text-center"> 硬盘 </th>
+                                    <th class="text-center"> 操作 </th>
+                            </tr>
+                        </thead>
+                          <tbody>
+                          {% for asset in assets %}
+                                <tr class="gradeX">
+                                    <td class="text-center" name="id" value="{{ asset.id }}" data-editable='false'>
+                                        <input name="id" value="32" type="checkbox" class="i-checks">
+                                    </td>
+                                    <td class="text-center hostname"> <a href="#">{{ asset.name }}</a></td>
+                                    <td class="text-center">{{ asset.nic_set.select_reload }}</td>
+                                    <td class="text-center">{{ asset.idc.model.name }}</td>
+                                    <td class="text-center">{{ asset.business_unit }}</td>
+                                    <td class="text-center">{{ asset.server.os_release }}</td>
+                                    <td class="text-center">{{ asset.cpu.cpu_core_count }}</td>
+                                    <td class="text-center">
+                                        {%for ram in asset.ram_set.all %}
+                                        {{ ram.capacity }}
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-center">500G</td>
+                                    <td class="text-center" data-editable='false'>
+                                        <a value="#" class="conn btn btn-xs btn-warning">更新</a>
+                                        <a href="{% url 'hostdetail'  asset.id %}" class="btn btn-xs btn-info">详细</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+            </table>
+          </div>
+        </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

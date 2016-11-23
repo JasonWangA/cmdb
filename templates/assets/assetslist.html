@@ -1,0 +1,174 @@
+{% extends 'base/_layout.html' %}
+{% block CSS %}
+<style>
+    .bar .pos {
+        margin-left: 5px;margin-top: 5px;float: left;position: relative;
+    }
+</style>
+{% endblock %}
+{% block content %}
+    <div id="content">
+        <div id="content-header">
+            <div id="breadcrumb">
+                <a href="{% url 'assetslist' %}" title="Go to Home" class="tip-bottom">
+                    <i class="icon-home"></i> 资产管理
+                </a>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="">
+               <!-导航栏>
+
+              <div class="nav" style="width: 50%;margin-left: 5px;">
+                  <button class="btn btn-info pos" onclick="">资产信息</button>
+                  <div class="btn-group pos" >
+                      <button data-toggle="dropdown" class="btn btn-success dropdown-toggle">机房 <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                      </ul>
+                  </div>
+                  <div class="btn-group pos">
+                    <button class="btn btn-primary">资产类型</button>
+                    <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">Action</a></li>
+                      <li><a href="#">Another action</a></li>
+                      <li><a href="#">Something else here</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">Separated link</a></li>
+                    </ul>
+                  </div>
+                  <div class="btn-group pos">
+                    <button class="btn btn-primary">资产状态</button>
+                    <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">Action</a></li>
+                      <li><a href="#">Another action</a></li>
+                      <li><a href="#">Something else here</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">Separated link</a></li>
+                    </ul>
+                  </div>
+              </div>
+            </div>
+
+
+            <div class="span10">
+                <div class="widget-box">
+                <div class="widget-title"> <span class="icon">
+            <div class="checker" id="uniform-title-checkbox">
+                <span><input type="checkbox" id="title-checkbox" name="title-checkbox" >
+                </span>
+            </div>
+            </span>
+                    <h5>Static table with checkboxes</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered table-striped with-check">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>设备类型</th>
+                                <th>固资ID</th>
+{#                                <th>CertName</th>#}
+                                <th>业务线</th>
+                                <th>运营商</th>
+                                <th>机房</th>
+                                <th>制造商</th>
+                                <th>状态</th>
+                                <th>编辑</th>
+                                <th>删除</th>
+                            </tr>
+                        </thead>
+                          <tbody>
+                          {% for asset in assets %}
+                            <tr auto-value="{{ asset.id }}">
+                              <td>
+                                  <div class="checker" id="uniform-undefined"><span><input type="checkbox" ></span>
+                                  </div>
+                              </td>
+                              <td style="text-align: center">{{ asset.asset_type }} </td>
+                              <td style="text-align: center">{{ asset.sn }}</td>
+                              <td style="text-align: center">{{ asset.business_unit }}</td>
+                              <td style="text-align: center">{{ asset.idc }}</td>
+                              <td style="text-align: center">{{ asset.cab_name }}</td>
+                              <td style="text-align: center">{{ asset.manufacture }}</td>
+                              <td style="text-align: center">{{ asset.status }}</td>
+                              <td style="position:relative; text-align: center">
+                                <a id="edit2" value="editbutton">
+                                    <i class="icon-edit" style="color:#00a2ca;"></i>
+                                </a>
+                              </td>
+                              <td style="position:relative; text-align: center">
+                                <input class="edit" style="font-size: 12px;text-align: center" type="button" value="删除">
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+            </table>
+          </div>
+        </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block JS %}
+    <script src="/static/js/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+                $("input[value='删除']").bind("click",function(){
+                    if($(this).parent().parents().find("input[type='checkbox']").prop("checked")){
+                        var page = $(this).parent().parent().attr('auto-value')
+                        var u = "/assets/hostdetail/" + page + "/"
+                        var mythis = $(this)
+
+                        $.ajax({
+                            url: + u,
+                            type: "post",
+                            dataType: "json",
+                            data: {
+                                "msg":'del',
+                                "id": + page,
+                                //companyName: $("#company").val(),
+                                //tel: $("#tel").val(),
+                                //QQ: $("#qq").val()
+                            },
+                            error:function(){
+                                console.log(arguments)
+
+                            },
+                            success: function(data){
+                                 if(data.status){
+                                     //var data_dict = JSON.parse(data);
+{#                                     后端删除成功后,前端删除此标签#}
+                                     $(mythis).parent().parent().remove()
+                                     alert('删除成功')
+                                }else{
+                                     //var data_dict = JSON.parse(data);
+                                     //var msg = data_dict['msg']
+                                     //console.log(msg)
+                                    alert('删除未成功');
+                                }
+                            }
+                        })
+{#                       $(this).parent().parent().remove()#}
+                    }
+
+                });
+                $("a[value='editbutton']").bind("click",function(){
+                    if($(this).parent().parents().find("input[type='checkbox']").prop("checked")){
+                        var index = $(this).parent().parent().attr('auto-value');
+                        var u = "http://127.0.0.1:8000/assets/hostdetail/" + index + "/";
+                        location.href = u;
+                    }
+                });
+
+            });
+    </script>
+
+{% endblock %}

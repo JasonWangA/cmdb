@@ -1,0 +1,177 @@
+{% extends 'base/_layout.html' %}
+{% load mytag %}
+{% block content %}
+    <div id="content">
+        <div id="content-header">
+            <div id="breadcrumb">
+                <a href="{% url 'group' %}" title="Go to Home" class="tip-bottom">
+                    <i class="icon-home"></i> 部门
+                </a>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="span9">
+               <!-导航栏>
+
+              <div class="nav" style="width: 50%;margin-left: 5px;">
+                  <button class="btn btn-info pos" onclick="">部门信息</button>
+                  <div class="btn-group pos" >
+                      <button data-toggle="dropdown" class="btn btn-success dropdown-toggle">部门类型 <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                      </ul>
+                  </div>
+              </div>
+              <div class="widget-box span9">
+                    <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                      <h5>操作部门</h5>
+                    </div>
+                    <div class="widget-content nopadding">
+                      <form class="form-horizontal">
+                        <div  style="padding-left: 0;float: left">
+                            <a href="/userinfo/group/adds/" class="btn btn-sm btn-primary ">添加部门 </a>
+                            <a href="#" name="batchdel" class="btn btn-sm btn-warning ">批量删除 </a>
+                        </div>
+                        <div  style="padding-right: 0;">
+                             <div class="input-group inline-group">
+                                <input type="text" style="float: right;width: 50px" id="search_input" name="keyword" value="" placeholder="Search">
+                                <input type="text" style="display: none">
+                                <div class="input-group-btn">
+                                    <button id='search_btn' href="#" type="button"  style="float: right" class="btn  btn-primary search-btn"  onclick="">
+                                        - 搜索 -
+                                    </button>
+                                    <button type="button" href="#" name="export" style="float: right" class="btn btn-sm btn-success search-btn-excel">
+                                        - 导出 -
+                                    </button>
+                                </div>
+                             </div>
+                        </div>
+                        <div class="navbar-form">
+
+                        <table class="table table-bordered table-striped with-check">
+                            <thead>
+                                <tr>
+                                    <th><input id="checkall" type="checkbox"  name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')"></th>
+                                    <th style="text-align: center">用户名</th>
+                                    <th class="text-center">所属部门</th>
+                                    <th class="text-center">办公IP</th>
+                                    <th class="text-center">联系方式</th>
+                                    <th class="text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in userlist_objs %}
+                                <tr class="gradeX">
+                                    <td class="text-center" name="id" value="{{ user.id }}" data-editable='false'>
+                                        <input name="id" value="{{ user.id }}" type="checkbox" class="i-checks">
+                                    </td>
+                                    <td class="text-center hostname"> <a href="{% url 'userdetail' user.id %}">{{ user.name }}</a></td>
+                                    <td class="text-center">{{ user.department }}</td>
+                                    <td class="text-center">{{ user.ip }}</td>
+                                    <td class="text-center">{{ user.phone }}</td>
+                                    <td class="text-center" data-editable='false'>
+                                        <a value="#" class="conn btn btn-xs btn-warning">分发</a>
+                                        <a href="{% url 'userdetail' user.id %}" class="btn btn-xs btn-info">详细资料</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                      </div>
+
+                        <div class="col-sm-6">
+                    </div>
+                        <div class="col-sm-6">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="editable_paginate">
+                                            <ul class="pagination" style="margin-top: 0; float: right">
+                                            {% if userlist_objs.has_previous %}
+                                                    <li class="paginate_button previous disabled" aria-controls="editable" tabindex="0" id="editable_previous">
+                                                         <a class="?page={{ userlist_objs.previous_page_number }}" href="#">Previous</a>
+                                                    </li>
+                                            {% endif %}
+                                             {% for page_num in userlist_objs.paginator.page_range %}
+                                                {% gusee_page userlist_objs.number page_num %}
+                                            {% endfor %}
+                                            {% if userlist_objs.has_next %}
+                                                    <li class="paginate_button next disabled" aria-controls="editable" tabindex="0" id="editable_next">
+                                                        <a class="page" href="#">Next</a>
+                                                    </li>
+                                                    {% endif %}
+
+                                            </ul>
+                                        </div>
+                        </div>
+                      </form>
+                    </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/sweetalert/sweetalert.min.js"></script>
+    <script>
+                            /*全选功能*/
+                    $(document).ready(function() {
+                        $("input[id=checkall]").click(
+                                function () {
+                                    if (this.checked) {
+                                        $("input[type=checkbox]").prop('checked', true)
+                                    } else {
+                                        $("input[type=checkbox]").prop('checked', false)
+                                    }
+                                }
+                        );
+                        $('a[name="deletegroup"]').click(
+                                function () {
+{#                                    console.log('123')#}
+                                    var delgroup = $(this).parent().parent().children("td[name='id']").attr("value");
+                                    swal({
+                                          title: "你确定要删除吗?",
+                                          text: "部门删除后就不能恢复了",
+                                          type: "warning",
+                                          showCancelButton: true,
+                                          confirmButtonColor: "#DD6B55",
+                                          confirmButtonText: "Yes, delete it!",
+                                          closeOnConfirm: false
+                                        },
+                                        function(){
+                                            alert(delgroup);
+                                            $.post("{% url 'deletes' %}", {DeleteId:JSON.stringify(delgroup),DeleteName:JSON.stringify('group')},
+                                                    function(callback){
+                                                    });
+                                            swal("删除!", "部门删除成功", "success");
+
+                                        });
+                                    $(this).parent().parent().remove();
+                                }
+                        );
+                        $('button[name="export"]').click(
+                                function(){
+                                     $('#assetform').table2excel({ // 选择器选择要到处的表格，也就是根据原表格构建的表格
+                                        exclude: ".btn-xs",
+                                        name: "Excel Document Name",
+                                        filename: "部门列表", // 导出的文件名
+                                        fileext: ".xls" // 导出的文件扩展名
+                                        });
+                                }
+                        );
+                            $('a[id="batchdel"]').click(
+                                    function () {
+                                        alert('删除你脑袋删除');
+                                    }
+                            )
+
+                        $('a[name="batchdel"]').click(function () {
+                                swal("谁给你的勇气删除的")
+                        });
+                   });
+{#http://t4t5.github.io/sweetalert/#}
+                            </script>
+{% endblock %}

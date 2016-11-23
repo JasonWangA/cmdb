@@ -1,0 +1,143 @@
+{% extends 'base/_layout.html' %}
+{% load mytag %}
+{% block content %}
+    <div id="content">
+        <div id="content-header">
+            <div id="breadcrumb">
+                <a href="{% url 'group' %}" title="Go to Home" class="tip-bottom">
+                    <i class="icon-home"></i> 部门
+                </a>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="span9">
+               <!-导航栏>
+                <div class="widget-box">
+                      <section class="panel">
+                          <div class="user-heading round">
+                              <a href="#">
+                                  <img src="/static/{{ objuser.head_img | cut_url }}" alt="">
+                              </a>
+                              <h1>{{ objuser.name }}</h1>
+                              <p>{{ objuser.email }}</p>
+                          </div>
+                          <ul class="nav nav-pills nav-stacked">
+                              <li class="active"><a href="profile.html"> <i class="icon-user"></i> Profile</a></li>
+                              <li><a href=""> <i class="icon-calendar"></i> Recent Activity <span class="label label-danger pull-right r-activity">9</span></a></li>
+                              <li><a href=""> <i class="icon-edit"></i> Edit profile</a></li>
+                          </ul>
+                      </section>
+                  </div>
+                  <div class="widget-box">
+                      <h1>详细</h1>
+                      <div class="widget-title">
+                              个人资料
+                      </div>
+                      <div class="widget-content">
+                            <table class="table table-bordered table-striped">
+                              <thead>
+                                <tr>
+                                  <th>类别</th>
+                                  <th>属性</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><span class="label">用户名</span></td>
+                                  <td style="text-align: center">{{ objuser.name }}</td>
+                                </tr>
+                                <tr>
+                                  <td><span class="label label-success">登录账户</span></td>
+                                  <td style="text-align: center">{{ objuser.user }} </td>
+                                </tr>
+                                <tr>
+                                  <td><span class="label label-warning">部门</span></td>
+                                  <td style="text-align: center">{{ objuser.department }}</td>
+                                </tr>
+                                <tr>
+                                  <td><span class="label label-important">创建时间</span></td>
+                                  <td style="text-align: center">{{ objuser.create_date }}</td>
+                                </tr>
+                                <tr>
+                                  <td><span class="label label-info">IP</span></td>
+                                  <td style="text-align: center">{{ objuser.ip }}</td>
+                                </tr>
+                                <tr>
+                                  <td><span class="label label-inverse">Email </span></td>
+                                  <td style="text-align: center">{{ objuser.email }}</td>
+                                </tr>
+                                <tr>
+                                  <td><span class="label label-inverse">Phone </span></td>
+                                  <td style="text-align: center">{{ objuser.phone }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                      </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/sweetalert/sweetalert.min.js"></script>
+    <script>
+                            /*全选功能*/
+                    $(document).ready(function() {
+                        $("input[id=checkall]").click(
+                                function () {
+                                    if (this.checked) {
+                                        $("input[type=checkbox]").prop('checked', true)
+                                    } else {
+                                        $("input[type=checkbox]").prop('checked', false)
+                                    }
+                                }
+                        );
+                        $('a[name="deletegroup"]').click(
+                                function () {
+{#                                    console.log('123')#}
+                                    var delgroup = $(this).parent().parent().children("td[name='id']").attr("value");
+                                    swal({
+                                          title: "你确定要删除吗?",
+                                          text: "部门删除后就不能恢复了",
+                                          type: "warning",
+                                          showCancelButton: true,
+                                          confirmButtonColor: "#DD6B55",
+                                          confirmButtonText: "Yes, delete it!",
+                                          closeOnConfirm: false
+                                        },
+                                        function(){
+                                            alert(delgroup);
+                                            $.post("{% url 'deletes' %}", {DeleteId:JSON.stringify(delgroup),DeleteName:JSON.stringify('group')},
+                                                    function(callback){
+                                                    });
+                                            swal("删除!", "部门删除成功", "success");
+
+                                        });
+                                    $(this).parent().parent().remove();
+                                }
+                        );
+                        $('button[name="export"]').click(
+                                function(){
+                                     $('#assetform').table2excel({ // 选择器选择要到处的表格，也就是根据原表格构建的表格
+                                        exclude: ".btn-xs",
+                                        name: "Excel Document Name",
+                                        filename: "部门列表", // 导出的文件名
+                                        fileext: ".xls" // 导出的文件扩展名
+                                        });
+                                }
+                        );
+                            $('a[id="batchdel"]').click(
+                                    function () {
+                                        alert('删除你脑袋删除');
+                                    }
+                            )
+
+                        $('a[name="batchdel"]').click(function () {
+                                swal("谁给你的勇气删除的")
+                        });
+                   });
+{#http://t4t5.github.io/sweetalert/#}
+                            </script>
+{% endblock %}

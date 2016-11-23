@@ -1,0 +1,172 @@
+{% extends 'base/_layout.html' %}
+{% load mytag %}
+{% block content %}
+    <div id="content">
+        <div id="content-header">
+            <div id="breadcrumb">
+                <a href="{% url 'group' %}" title="Go to Home" class="tip-bottom">
+                    <i class="icon-home"></i> salt认证
+                </a>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="span9">
+              <div class="widget-box span9">
+                    <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                      <h5>salt认证列表</h5>
+                    </div>
+                    <div class="widget-content nopadding">
+                      <form class="form-horizontal" id="assetform">
+                        <div  style="padding-left: 0;float: left">
+                            <a href="#" class="btn btn-sm btn-primary ">更新认证</a>
+                            <a href="#" name="batchdel" class="btn btn-sm btn-warning ">批量认证</a>
+                        </div>
+                        <div style="padding-right: 0;">
+
+                            <select name="status" class="form-control m-b input-sm" onchange="">
+                                <option value="">minion状态</option>
+                                <option value="1">已认证</option>
+                                <option value="2">未认证</option>
+                            </select>
+                            <div  style="float: right">
+                                <input type="text" style="float: right;width: 50px" id="search_input" name="keyword" value="" placeholder="Search">
+                                <input type="text" style="display: none">
+                                <div class="input-group-btn" style="float:right;">
+                                    <button id='search_btn' href="#" type="button"  style="float: right" class="btn  btn-primary search-btn"  onclick="change_info()">
+                                        - 搜索 -
+                                    </button>
+                                    <button type="button" href="#" name="export" style="float: right" class="btn btn-sm btn-success search-btn-excel" onclick="return false">
+                                        - 导出 -
+                                    </button>
+                                </div>
+                             </div>
+                        </div>
+
+{#                        <div class="navbar-form">#}
+
+                        <table class="table table-bordered table-striped with-check">
+                            <thead>
+                                <tr>
+                                    <th><input id="checkall" type="checkbox"  name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')"></th>
+                                    <th style="text-align: center">minion名称</th>
+                                    <th style="text-align: center">状态</th>
+                                    <th style="text-align: center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for saltobj in saltlist_objs %}
+                                <tr class="gradeX">
+                                    <td class="text-center" name="id" value="{{ saltobj.id }}" data-editable='false'>
+                                        <input name="id" value="{{ saltobj.id }}" type="checkbox" class="i-checks">
+                                    </td>
+                                    <td class="text-center" name="hostname"> <a href="#">{{ saltobj.name }}</a></td>
+                                    {% if saltobj.status == 1 %}
+                                    <td class="text-center"><button class="btn btn-info btn-xs btn-circle" type="button"><i class="fa fa-check"></i>
+                                                                </button></td>
+                                    {% else %}
+                                        <td class="text-center"><button class="btn btn-warning btn-xs btn-circle" type="button"><i class="fa fa-times"></i>
+                                                                </button></td>
+                                    {% endif %}
+                                    <td class="text-center" data-editable='false'>
+                                        {% if saltobj.status == 1 %}
+                                            <a value="#" name="delete" class="btn btn-xs btn-danger asset_del">删除</a>
+                                        {% else %}
+                                            <a value="#" name="allow" class="conn btn btn-xs btn-warning">允许</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+{#                      </div>#}
+
+                        <div class="col-sm-6">
+                                    <div class="dataTables_paginate paging_simple_numbers" id="editable_paginate">
+                                        <ul class="pagination" style="margin-top: 0; float: right">
+                                        {% if saltlist_objs.has_previous %}
+                                                <li class="paginate_button previous disabled" aria-controls="editable" tabindex="0" id="editable_previous">
+                                                     <a class="?page={{ saltlist_objs.previous_page_number }}" href="#">Previous</a>
+                                                </li>
+                                        {% endif %}
+                                         {% for page_num in saltlist_objs.paginator.page_range %}
+                                            {% gusee_page saltlist_objs.number page_num %}
+                                        {% endfor %}
+                                        {% if saltlist_objs.has_next %}
+                                                <li class="paginate_button next disabled" aria-controls="editable" tabindex="0" id="editable_next">
+                                                    <a class="page" href="#">Next</a>
+                                                </li>
+                                                {% endif %}
+
+                                        </ul>
+                                    </div>
+                    </div>
+                      </form>
+                    </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/sweetalert/sweetalert.min.js"></script>
+    <script>
+                            /*全选功能*/
+                    $(document).ready(function() {
+                        $("input[id=checkall]").click(
+                                function () {
+                                    if (this.checked) {
+                                        $("input[type=checkbox]").prop('checked', true)
+                                    } else {
+                                        $("input[type=checkbox]").prop('checked', false)
+                                    }
+                                }
+                        );
+                        $('a[name="deletegroup"]').click(
+                                function () {
+{#                                    console.log('123')#}
+                                    var delgroup = $(this).parent().parent().children("td[name='id']").attr("value");
+                                    swal({
+                                          title: "你确定要删除吗?",
+                                          text: "部门删除后就不能恢复了",
+                                          type: "warning",
+                                          showCancelButton: true,
+                                          confirmButtonColor: "#DD6B55",
+                                          confirmButtonText: "Yes, delete it!",
+                                          closeOnConfirm: false
+                                        },
+                                        function(){
+                                            alert(delgroup);
+                                            $.post("{% url 'deletes' %}", {DeleteId:JSON.stringify(delgroup),DeleteName:JSON.stringify('group')},
+                                                    function(callback){
+                                                    });
+                                            swal("删除!", "部门删除成功", "success");
+
+                                        });
+                                    $(this).parent().parent().remove();
+                                }
+                        );
+                        $('button[name="export"]').click(
+                                function(){
+                                     $('#assetform').table2excel({ // 选择器选择要到处的表格，也就是根据原表格构建的表格
+                                        exclude: ".btn-xs",
+                                        name: "Excel Document Name",
+                                        filename: "部门列表", // 导出的文件名
+                                        fileext: ".xls" // 导出的文件扩展名
+                                        });
+                                }
+                        );
+                            $('a[id="batchdel"]').click(
+                                    function () {
+                                        alert('删除你脑袋删除');
+                                    }
+                            )
+
+                        $('a[name="batchdel"]').click(function () {
+                                swal("谁给你的勇气删除的")
+                        });
+                   });
+{#http://t4t5.github.io/sweetalert/#}
+                            </script>
+{% endblock %}
