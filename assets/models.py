@@ -9,7 +9,7 @@ from userinfo.models import UserProfile
 class Asset(models.Model):
     asset_type_choices = (
         ('server', u'物理机'),
-        ('server', u'虚拟机'),
+        # ('server', u'虚拟机'),
         ('switch', u'交换机'),
         ('router', u'路由器'),
         ('firewall', u'防火墙'),
@@ -55,6 +55,12 @@ class Server(models.Model):
         ('auto','Auto'),
         ('manual','Manual'),
     )
+    sub_assset_type_choices = (
+        (0, 'PC服务器'),
+        (1, '刀片机'),
+        (2, '小型机'),
+    )
+    sub_asset_type = models.SmallIntegerField(choices=sub_assset_type_choices, verbose_name="服务器类型", default=0)
     #手工添加还是自动添加
     created_by = models.CharField(choices=created_by_choices,max_length=32,default='auto')
     #如果是虚拟机 那么他的宿主机是这个
@@ -361,3 +367,5 @@ class  Tags(models.Model):
     class Meta:
         verbose_name = '标签'
         verbose_name_plural = "标签"
+
+

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="{% url 'api_test' %}" method="post">
+        {% csrf_token %}
+        <textarea name="data" cols="20" rows="10">
+
+        </textarea>
+        <input type="submit" value="create">
+        {{ errors }}
+        <br>
+        {{ data }}
+    </form>
+</body>
+</html>

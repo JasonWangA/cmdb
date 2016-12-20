@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+#  Author: Jason Wang
+
 """cmdb URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,18 +19,20 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from utils import views
+from cmdb import view
 from api import rest_urls
 urlpatterns = [
     url(r'^admin/', admin.site.urls,name='admin'),
-    url(r'^$',views.index,name='index'),
-    url(r'^login/$', views.a_login,name='login',),
-    url(r'^logout/$', views.a_logout,name='logout',),
-    url(r'^$',views.index,name='index'),
+    # url(r'^$',view.index,name='index'),
+    url(r'^$',view.index,name="dashboard"),
+    url(r'^login/$', view.acc_login,name='login',),
+    url(r'^logout/$', view.acc_logout,name='logout',),
     url(r'^assets/', include('assets.urls')),
+    url(r'^asset/',include('asset.urls')),
     url(r'^install/', include('install.urls')),
     url(r'^userinfo/', include('userinfo.urls')),
     url(r'^log/', include('log.urls')),
     url(r'^api/', include(rest_urls)),
-    url(r'^rest_api/',include('snippets.urls'))
+    url(r'^rest_api/', include( 'snippets.urls')),
 ]
+

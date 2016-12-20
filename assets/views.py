@@ -1,26 +1,40 @@
 from django.shortcuts import render,HttpResponseRedirect,HttpResponse
 from django.contrib.auth.decorators import login_required
 from assets import models
-from assets import forms
+from assets import forms,admin
 from assets import assets_list
 from django.core.paginator import  Paginator,EmptyPage,PageNotAnInteger
-from assets import core
+from assets import core,tables
 import json
 # Create your views here.
 @login_required
 def assetslist(request):
+    print(request)
+    asset_obj_list = tables.table_filter(request, admin.AssetAdmin, models.Asset)
+    # asset_obj_list = models.Asset.objects.all()
+    print("asset_obj_list:", asset_obj_list)
+    order_res = tables.get_orderby(request, asset_obj_list, admin.AssetAdmin)
+    print('----->',order_res)
+    paginator = Paginator(order_res[0], admin.AssetAdmin.list_per_page)
+
     page = request.GET.get('page')
-    assets = assets_list.fetch_asset_list()
-    print(assets)
-    paginator = Paginator(assets,10)
     try:
-       assets_obj = paginator.page(page)
-       print(assets_obj)
+        asset_objs = paginator.page(page)
     except PageNotAnInteger:
-       assets_obj = paginator.page(1)
+        asset_objs = paginator.page(1)
     except EmptyPage:
-       assets_obj = paginator.page(paginator.num_pages)
-    return render( request, 'assets/assetslist.html', {'assets':assets_obj} )
+        asset_objs = paginator.page(paginator.num_pages)
+
+    table_obj = tables.TableHandler(request,
+                                    models.Asset,
+                                    admin.AssetAdmin,
+                                    asset_objs,
+                                    order_res
+                                    )
+    print(table_obj.admin_class.list_display)
+
+    return render(request, 'assets/assetlist.html', {'table_obj': table_obj,
+                                                  'paginator': paginator})
 #机房列表
 @login_required
 def assetsarea(request):

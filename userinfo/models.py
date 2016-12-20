@@ -27,6 +27,8 @@ class UserProfile(models.Model):
     memo = models.TextField(verbose_name='备注', null=True, blank=True)
     #创建时间
     create_date  = models.DateField(verbose_name='注册时间',auto_now=True)
+    #是否为激活用户
+    is_active = models.BooleanField(verbose_name='是否激活',default=False)
     def __str__(self):
         return self.name
     class Meta:

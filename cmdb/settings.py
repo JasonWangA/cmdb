@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'asset',
     'assets',
     'install',
     'log',
@@ -141,3 +142,16 @@ SALT_API = {"url": "http://10.211.55.4:8080",
             "username": "jason",
             "password": "Jason@2017"
             }
+
+TOKEN_TIMEOUT = 120
+
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'PAGE_SIZE': 10
+}
